@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Socket Alert Demo</title>
+  <script src="/socket.io/socket.io.js"></script>
+</head>
+<body>
+  <h1>Simple WebSocket System Notification Demo</h1>
+  <button id="alarmBtn">Send Alarm</button>
+
+  <script>
+    const socket = io();
+
+    // Request permission for notifications
+    if (Notification.permission !== 'granted') {
+      Notification.requestPermission();
+    }
+
+    // Emit signal
+    document.getElementById('alarmBtn').addEventListener('click', () => {
+      socket.emit('triggerAlarm');
+    });
+
+    // Receive signal
+    socket.on('showAlarm', () => {
+      if (Notification.permission === 'granted') {
+        new Notification('🚨 System Alert', {
+          body: 'Hey! It is urgent. Send me reply.',
+          icon: 'https://cdn-icons-png.flaticon.com/512/565/565547.png'
+        });
+      } else {
+        alert('Please grant the System Notification Permission!');
+      }
+    });
+  </script>
+</body>
+</html>
