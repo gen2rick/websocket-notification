@@ -16,6 +16,11 @@ io.on('connection', (socket) => {
     io.emit('showAlarm');
   });
 
+  socket.on('triggerRefuse', () => {
+    // Broadcast refusal to all connected clients
+    io.emit('showRefuse');
+  });
+
   socket.on('disconnect', () => {
     console.log('User disconnected:', socket.id);
   });
