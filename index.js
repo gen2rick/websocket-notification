@@ -1,31 +1,37 @@
-const express = require('express');
-const http = require('http');
-const { Server } = require('socket.io');
+const express = require("express");
+const http = require("http");
+const { Server } = require("socket.io");
 
 const app = express();
 const server = http.createServer(app);
 const io = new Server(server);
 
-app.use(express.static('public'));
+app.use(express.static("public"));
 
-io.on('connection', (socket) => {
-  console.log('User connected:', socket.id);
+let connectedUsers = 0;
 
-  socket.on('triggerAlarm', () => {
+io.on("connection", (socket) => {
+  console.log("User connected:", socket.id);
+  connectedUsers++;
+  const ip =
+    socket.handshake.headers["x-forwarded-for"] || socket.conn.remoteAddress;
+
+  socket.on("triggerAlarm", () => {
     // Broadcast to all connected clients
-    io.emit('showAlarm');
+    io.emit("showAlarm", { ip, connectedUsers });
   });
 
-  socket.on('triggerRefuse', () => {
+  socket.on("triggerRefuse", () => {
     // Broadcast refusal to all connected clients
-    io.emit('showRefuse');
+    io.emit("showRefuse");
   });
 
-  socket.on('disconnect', () => {
-    console.log('User disconnected:', socket.id);
+  socket.on("disconnect", () => {
+    console.log("User disconnected:", socket.id);
+    connectedUsers--;
   });
 });
 
 server.listen(3000, () => {
-  console.log('Server is running at http://localhost:3000');
+  console.log("Server is running at http://localhost:3000");
 });

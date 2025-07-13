@@ -1,57 +1,67 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-  <meta charset="UTF-8" />
-  <title>Socket Alert Demo</title>
-  <script src="/socket.io/socket.io.js"></script>
-  <link rel="icon" href="./alarm.png" type="image/x-icon" />
-</head>
-<body>
-  <h1>Simple WebSocket System Notification Demo</h1>
-  <button id="alarmBtn" style="background-color: #007bff; color: white; border: none; padding: 8px 16px; border-radius: 4px; cursor: pointer;">Send Alarm</button>
-  <button id="refuseBtn" style="background-color: red; color: white; border: none; padding: 8px 16px; border-radius: 4px; cursor: pointer; margin-left: 8px;">Refuse</button>
+  <head>
+    <meta charset="UTF-8" />
+    <title>Socket Alert Demo</title>
+    <script src="/socket.io/socket.io.js"></script>
+    <link rel="icon" href="./alarm.png" type="image/x-icon" />
+  </head>
+  <body>
+    <h1>Simple WebSocket System Notification Demo</h1>
+    <button
+      id="alarmBtn"
+      style="background-color: #007bff; color: white; border: none; padding: 8px 16px; border-radius: 4px; cursor: pointer;"
+    >
+      Send Alarm
+    </button>
+    <button
+      id="refuseBtn"
+      style="background-color: red; color: white; border: none; padding: 8px 16px; border-radius: 4px; cursor: pointer; margin-left: 8px;"
+    >
+      Refuse
+    </button>
 
-  <script>
-    const socket = io();
+    <script>
+      const socket = io();
 
-    // Request permission for notifications
-    if (Notification.permission !== 'granted') {
-      Notification.requestPermission();
-    }
-
-    // Emit signal
-    document.getElementById('alarmBtn').addEventListener('click', () => {
-      socket.emit('triggerAlarm');
-    });
-
-    // Refuse button emits a different event
-    document.getElementById('refuseBtn').addEventListener('click', () => {
-      socket.emit('triggerRefuse');
-    });
-
-    // Receive signal
-    socket.on('showAlarm', () => {
-      if (Notification.permission === 'granted') {
-        new Notification('🚨 System Alert', {
-          body: 'Hey! It is urgent. Send me reply.',
-          icon: 'https://cdn-icons-png.flaticon.com/512/565/565547.png'
-        });
-      } else {
-        alert('Please grant the System Notification Permission!');
+      // Request permission for notifications
+      if (Notification.permission !== 'granted') {
+        Notification.requestPermission();
       }
-    });
 
-    // Receive refuse signal
-    socket.on('showRefuse', () => {
-      if (Notification.permission === 'granted') {
-        new Notification('❌ Refusal Notice', {
-          body: 'The request has been refused.',
-          icon: 'https://cdn-icons-png.flaticon.com/512/1828/1828843.png'
-        });
-      } else {
-        alert('Please grant the System Notification Permission!');
-      }
-    });
-  </script>
-</body>
+      // Emit signal
+      document.getElementById('alarmBtn').addEventListener('click', () => {
+        socket.emit('triggerAlarm');
+      });
+
+      // Refuse button emits a different event
+      document.getElementById('refuseBtn').addEventListener('click', () => {
+        socket.emit('triggerRefuse');
+      });
+
+      // Receive signal
+      socket.on('showAlarm', (payload) => {
+        if (Notification.permission === 'granted') {
+          new Notification('🚨 System Alert', {
+            body: `Hey! Received an alert from ${payload.ip} with ${payload.connectedUsers} connected users.`,
+            icon: 'https://cdn-icons-png.flaticon.com/512/565/565547.png'
+          });
+        } else {
+          alert('Please grant the System Notification Permission!');
+        }
+      });
+
+      // Receive refuse signal
+      socket.on('showRefuse', () => {
+        if (Notification.permission === 'granted') {
+          new Notification('❌ Refusal Notice', {
+            body: 'The request has been refused.',
+            icon: 'https://cdn-icons-png.flaticon.com/512/1828/1828843.png'
+          });
+        } else {
+          alert('Please grant the System Notification Permission!');
+        }
+      });
+    </script>
+  </body>
 </html>
