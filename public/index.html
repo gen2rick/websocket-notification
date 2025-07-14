@@ -43,7 +43,7 @@
       socket.on('showAlarm', (payload) => {
         if (Notification.permission === 'granted') {
           new Notification('🚨 System Alert', {
-            body: `Hey! Users: ${payload.connectedUsers} From ${payload.ip}`,
+            body: `Hey! Users: ${payload.connectedUsers}`,
             icon: 'https://cdn-icons-png.flaticon.com/512/565/565547.png'
           });
         } else {

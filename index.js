@@ -13,12 +13,10 @@ let connectedUsers = 0;
 io.on("connection", (socket) => {
   console.log("User connected:", socket.id);
   connectedUsers++;
-  const ip =
-    socket.handshake.headers["x-forwarded-for"] || socket.conn.remoteAddress;
 
   socket.on("triggerAlarm", () => {
     // Broadcast to all connected clients
-    io.emit("showAlarm", { ip, connectedUsers });
+    io.emit("showAlarm", { connectedUsers });
   });
 
   socket.on("triggerRefuse", () => {
