@@ -20,6 +20,8 @@
     >
       Refuse
     </button>
+    <audio id="alarmSound" src="./alarm.wav" preload="auto"></audio>
+    <audio id="refuseSound" src="./refuse.wav" preload="auto"></audio>
 
     <script>
       const socket = io();
@@ -42,6 +44,13 @@
       // Receive signal
       socket.on('showAlarm', (payload) => {
         if (Notification.permission === 'granted') {
+          const audio = document.getElementById("alarmSound");
+          if (audio) {
+            audio.play().catch((err) => {
+              console.error("Unable to play alarm audio:", err);
+            });
+          }
+
           new Notification('🚨 System Alert', {
             body: `Hey! Users: ${payload.connectedUsers}`,
             icon: 'https://cdn-icons-png.flaticon.com/512/565/565547.png'
@@ -54,6 +63,13 @@
       // Receive refuse signal
       socket.on('showRefuse', () => {
         if (Notification.permission === 'granted') {
+          const audio = document.getElementById("refuseSound");
+          if (audio) {
+            audio.play().catch((err) => {
+              console.error("Unable to play refuse audio:", err);
+            });
+          }
+
           new Notification('❌ Refusal Notice', {
             body: 'The request has been refused.',
             icon: 'https://cdn-icons-png.flaticon.com/512/1828/1828843.png'
