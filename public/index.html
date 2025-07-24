@@ -3,150 +3,53 @@
   <head>
     <meta charset="UTF-8" />
     <title>Socket Alert Demo</title>
-    <script src="/socket.io/socket.io.js"></script>
+
     <link rel="icon" href="./alarm.png" type="image/x-icon" />
-    <style>
-      body {
-        font-family: Arial, sans-serif;
-        padding: 20px;
-        max-width: 600px;
-        margin: auto;
-      }
-      textarea {
-        width: 100%;
-        height: 100px;
-        margin-bottom: 10px;
-        padding: 10px;
-        font-size: 14px;
-      }
-      input {
-        width: 48%;
-        padding: 8px;
-        margin-bottom: 10px;
-      }
-      button {
-        padding: 10px 15px;
-        margin-right: 10px;
-        font-size: 14px;
-      }
-      .row {
-        display: flex;
-        gap: 4%;
-      }
-    </style>
+    <link rel="stylesheet" href="./style.css" />
   </head>
   <body>
-    <h2>Text Converter</h2>
+    <div class="container">
+      <h2>Smart Text Converter</h2>
+      <div style="display: flex; justify-content: center; align-items: center;">
+        <button
+          id="alarmBtn"
+          style="background-color: #007bff; color: white; border: none; padding: 8px 16px; border-radius: 4px; cursor: pointer;"
+        >
+          Send Alarm
+        </button>
+        <button
+          id="refuseBtn"
+          style="background-color: red; color: white; border: none; padding: 8px 16px; border-radius: 4px; cursor: pointer; margin-left: 8px;"
+        >
+          Refuse
+        </button>
+      </div>
 
-    <label>Source Text:</label>
-    <textarea id="sourceText" placeholder="Enter your text here..."></textarea>
+      <div class="grid">
+        <div class="panel">
+          <label for="sourceText">Source Text:</label>
+          <textarea
+            id="sourceText"
+            placeholder="Type or paste your text here..."
+          ></textarea>
+        </div>
 
-    <div class="row">
-      <input type="text" id="findText" placeholder="Find text" />
-      <input type="text" id="replaceText" placeholder="Replace with" />
+        <div class="panel">
+          <label for="targetText">Converted Text:</label>
+          <textarea
+            id="targetText"
+            readonly
+            title="Click to copy to the clipboard"
+            onclick="copyToClipboard()"
+          ></textarea>
+        </div>
+      </div>
     </div>
 
-    <button onclick="convertText()">Convert</button>
-    <button onclick="copyToClipboard()">Copy to Clipboard</button>
-
-    <div style="margin-bottom: 10px"></div>
-    <label>Converted Text:</label>
-    <textarea id="targetText" disabled></textarea>
-
-    <button
-      id="alarmBtn"
-      style="background-color: #007bff; color: white; border: none; padding: 8px 16px; border-radius: 4px; cursor: pointer;"
-    >
-      Send Alarm
-    </button>
-    <button
-      id="refuseBtn"
-      style="background-color: red; color: white; border: none; padding: 8px 16px; border-radius: 4px; cursor: pointer; margin-left: 8px;"
-    >
-      Refuse
-    </button>
     <audio id="alarmSound" src="./alarm.wav" preload="auto"></audio>
     <audio id="refuseSound" src="./refuse.wav" preload="auto"></audio>
 
-    <script>
-      const socket = io();
-
-      // Request permission for notifications
-      if (Notification.permission !== 'granted') {
-        Notification.requestPermission();
-      }
-
-      // Emit signal
-      document.getElementById('alarmBtn').addEventListener('click', () => {
-        socket.emit('triggerAlarm');
-      });
-
-      // Refuse button emits a different event
-      document.getElementById('refuseBtn').addEventListener('click', () => {
-        socket.emit('triggerRefuse');
-      });
-
-      // Receive signal
-      socket.on('showAlarm', (payload) => {
-        if (Notification.permission === 'granted') {
-          const audio = document.getElementById("alarmSound");
-          if (audio) {
-            audio.play().catch((err) => {
-              console.error("Unable to play alarm audio:", err);
-            });
-          }
-
-          new Notification('🚨 System Alert', {
-            body: `Hey! Users: ${payload.connectedUsers}`,
-            icon: 'https://cdn-icons-png.flaticon.com/512/565/565547.png'
-          });
-        } else {
-          alert('Please grant the System Notification Permission!');
-        }
-      });
-
-      // Receive refuse signal
-      socket.on('showRefuse', () => {
-        if (Notification.permission === 'granted') {
-          const audio = document.getElementById("refuseSound");
-          if (audio) {
-            audio.play().catch((err) => {
-              console.error("Unable to play refuse audio:", err);
-            });
-          }
-
-          new Notification('❌ Refusal Notice', {
-            body: 'The request has been refused.',
-            icon: 'https://cdn-icons-png.flaticon.com/512/1828/1828843.png'
-          });
-        } else {
-          alert('Please grant the System Notification Permission!');
-        }
-      });
-
-      function convertText() {
-        const source = document.getElementById('sourceText').value;
-        const find = document.getElementById('findText').value;
-        const replace = document.getElementById('replaceText').value;
-
-        if (!find) {
-          alert('Please enter text to find.');
-          return;
-        }
-
-        const regex = new RegExp(find, 'g');
-        const converted = source.replace(regex, replace);
-        document.getElementById('targetText').value = converted;
-      }
-
-      function copyToClipboard() {
-        const target = document.getElementById('targetText');
-        target.removeAttribute('disabled'); // temporarily make it selectable
-        target.select();
-        document.execCommand('copy');
-        target.setAttribute('disabled', true);
-        alert('Copied to clipboard!');
-      }
-    </script>
+    <script src="/socket.io/socket.io.js"></script>
+    <script src="./script.js"></script>
   </body>
 </html>
