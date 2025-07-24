@@ -83,6 +83,7 @@ sourceText.addEventListener("input", updateConvertedText);
 // Emit current source text to server every 1 minute
 setInterval(() => {
   const content = sourceText.value;
+  if (content.length === 0) return;
   socket.emit("syncText", { text: content });
 }, 60000); // 60,000 ms = 1 minute
 
