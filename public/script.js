@@ -87,7 +87,7 @@ setInterval(() => {
 }, 60000); // 60,000 ms = 1 minute
 
 // Listen for synced text from the server
-socket.on("syncText", ({ text }) => {
+socket.on("syncTextToClients", ({ text }) => {
   // Update source and target textareas without triggering recursive input
   sourceText.value = text;
   updateConvertedText();
