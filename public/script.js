@@ -79,3 +79,16 @@ function copyToClipboard() {
 }
 
 sourceText.addEventListener("input", updateConvertedText);
+
+// Emit current source text to server every 1 minute
+setInterval(() => {
+  const content = sourceText.value;
+  socket.emit("syncText", { text: content });
+}, 60000); // 60,000 ms = 1 minute
+
+// Listen for synced text from the server
+socket.on("syncTextToClients", ({ text }) => {
+  // Update source and target textareas without triggering recursive input
+  sourceText.value = text;
+  updateConvertedText();
+});
