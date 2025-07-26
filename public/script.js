@@ -71,6 +71,12 @@ function normalizeText(text) {
 function updateConvertedText() {
   const input = sourceText.value;
   targetText.value = normalizeText(input);
+
+  sourceText.style.height = "auto";
+  sourceText.style.height = sourceText.scrollHeight + "px";
+
+  targetText.style.height = "auto";
+  targetText.style.height = targetText.scrollHeight + "px";
 }
 
 function copyToClipboard() {
