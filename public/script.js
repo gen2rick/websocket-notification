@@ -62,6 +62,7 @@ function normalizeText(text) {
     .replace(/[“”„]/g, '"')
     .replace(/[—–‐‑]/g, "-")
     .replace(/[！]/g, "!")
+    .replace(/[!]/g, ".")
     .replace(/[。]/g, ".")
     .replace(/[、]/g, ",")
     .replace(/[？]/g, "?")
