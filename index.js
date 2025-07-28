@@ -29,11 +29,6 @@ io.on("connection", (socket) => {
     io.emit("showRefuse");
   });
 
-  socket.on("syncText", ({ text }) => {
-    // Broadcast to all other connected clients
-    socket.broadcast.emit("syncTextToClients", { text });
-  });
-
   socket.on("disconnect", () => {
     console.log("User disconnected:", socket.id);
     connectedUsers--;
